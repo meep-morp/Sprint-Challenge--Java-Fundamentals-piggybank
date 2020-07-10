@@ -61,7 +61,7 @@ public class CoinsController {
     public ResponseEntity<?> deleteCountry(@PathVariable float amount) {
         coinList.clear();
         coinrepo.findAll().iterator().forEachRemaining(coinList::add);
-        coinList.sort((c1,c2) -> (Math.round(c2.getValue() * c2.getQuantity()) - (c1.getQuantity() * c1.getQuantity())));
+        coinList.sort((c1,c2) -> c2.getQuantity() - c1.getQuantity());
         coinList.forEach(c -> System.out.println(c + "\n"));
 
         float count = 0;

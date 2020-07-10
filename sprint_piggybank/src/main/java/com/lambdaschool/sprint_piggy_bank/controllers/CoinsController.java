@@ -63,17 +63,17 @@ public class CoinsController {
         coinList.clear();
         coinrepo.findAll().iterator().forEachRemaining(coinList::add);
         coinList.sort(Comparator.comparingInt(Coins::getQuantity));
-        coinList.forEach(c -> System.out.println(c + "\n"));
+//        coinList.forEach(c -> System.out.println(c + "\n"));
 
         float count = 0;
-        List<Coins> tempList = coinList;
 
         if (getTotal() >= amount) {
 
-            Iterator<Coins> i = tempList.iterator();
+            System.out.println("Taking out $" + amount + " From $" +Math.round(getTotal()*100.0)/100.0);
+
+            Iterator<Coins> i = coinList.iterator();
             while (i.hasNext()) {
                 Coins coin = i.next();
-                System.out.println(count);
                 count += coin.getValue() * coin.getQuantity();
 
                 if (count <= amount) {
@@ -81,8 +81,7 @@ public class CoinsController {
                     i.remove();
                 }
             }
-
-            for (Coins c : coinList) {
+            for (Coins c: coinList) {
                 System.out.println(c);
             }
             System.out.println("The piggy bank holds $" + Math.round(getTotal()*100.0)/100.0);

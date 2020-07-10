@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.Iterator;
 import java.util.List;
 
@@ -61,7 +62,7 @@ public class CoinsController {
     public ResponseEntity<?> deleteCountry(@PathVariable float amount) {
         coinList.clear();
         coinrepo.findAll().iterator().forEachRemaining(coinList::add);
-        coinList.sort((c1,c2) -> c2.getQuantity() - c1.getQuantity());
+        coinList.sort(Comparator.comparingInt(Coins::getQuantity));
         coinList.forEach(c -> System.out.println(c + "\n"));
 
         float count = 0;
@@ -84,7 +85,7 @@ public class CoinsController {
             for (Coins c : coinList) {
                 System.out.println(c);
             }
-            System.out.println("The piggy bank holds " + getTotal());
+            System.out.println("The piggy bank holds $" + Math.round(getTotal()*100.0)/100.0);
 
         } else System.out.println("Money not available");
 

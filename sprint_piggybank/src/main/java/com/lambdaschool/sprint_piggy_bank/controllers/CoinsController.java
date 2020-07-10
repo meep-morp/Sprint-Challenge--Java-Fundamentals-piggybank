@@ -59,7 +59,7 @@ public class CoinsController {
     // Stretch Goal
 
     @DeleteMapping(path = "/{amount}")
-    public ResponseEntity<?> deleteCountry(@PathVariable float amount) {
+    public ResponseEntity<?> deleteCoin(@PathVariable float amount) {
         coinList.clear();
         coinrepo.findAll().iterator().forEachRemaining(coinList::add);
         coinList.sort(Comparator.comparingInt(Coins::getQuantity));

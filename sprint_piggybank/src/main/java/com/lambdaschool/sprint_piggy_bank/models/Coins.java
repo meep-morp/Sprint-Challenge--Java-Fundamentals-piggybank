@@ -66,4 +66,18 @@ public class Coins {
     public void setQuantity(int quantity) {
         this.quantity = quantity;
     }
+
+    // Overrrides
+
+
+    @Override
+    public String toString() {
+        return "Coins{" +
+                "coinid=" + coinid +
+                ", name='" + name + '\'' +
+                ", nameplural='" + nameplural + '\'' +
+                ", value=" + value +
+                ", quantity=" + quantity +
+                '}';
+    }
 }

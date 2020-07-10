@@ -2,15 +2,18 @@ package com.lambdaschool.sprint_piggy_bank.controllers;
 
 import com.lambdaschool.sprint_piggy_bank.models.Coins;
 import com.lambdaschool.sprint_piggy_bank.repositories.CoinRepo;
+import org.h2.command.dml.MergeUsing;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
-import java.util.concurrent.atomic.AtomicReference;
 
 @RestController
 public class CoinsController {
@@ -23,20 +26,18 @@ public class CoinsController {
         } else return coin.getName();
     }
 
-    @Autowired
-    CoinRepo coinrepo;
+    private float getTotal() {
+        float total = 0;
 
-    private List<Coins> findCountries (List<Coins> coinList, TestCoin tester) {
-        List<Coins> tempList = new ArrayList<>();
-
-        for (Coins c : coinList) {
-            if (tester.test(c)) {
-                tempList.add(c);
-            }
+        for (Coins coin : coinList) {
+            total += coin.getValue() * coin.getQuantity();
         }
 
-        return tempList;
+        return total;
     }
+
+    @Autowired
+    CoinRepo coinrepo;
 
     @GetMapping(value = "/total",
             produces = {"application/json"})
@@ -45,15 +46,47 @@ public class CoinsController {
         coinList.clear();
         coinrepo.findAll().iterator().forEachRemaining(coinList::add);
 
-        float count = 0;
-
         for (Coins coin : coinList) {
-            count += coin.getValue() * coin.getQuantity();
-
             System.out.println(coin.getQuantity() + " " + checkPlural(coin));
         }
 
-        System.out.print("The piggy bank holds $" + Math.round(count*100.0)/100.0);
+        System.out.print("The piggy bank holds $" + Math.round(getTotal()*100.0)/100.0);
+
+        return new ResponseEntity<>(HttpStatus.OK);
+    }
+
+    // Stretch Goal
+
+    @DeleteMapping(path = "/{amount}")
+    public ResponseEntity<?> deleteCountry(@PathVariable float amount) {
+        coinList.clear();
+        coinrepo.findAll().iterator().forEachRemaining(coinList::add);
+        coinList.sort((c1,c2) -> (Math.round(c2.getValue() * c2.getQuantity()) - (c1.getQuantity() * c1.getQuantity())));
+        coinList.forEach(c -> System.out.println(c + "\n"));
+
+        float count = 0;
+        List<Coins> tempList = coinList;
+
+        if (getTotal() >= amount) {
+
+            Iterator<Coins> i = tempList.iterator();
+            while (i.hasNext()) {
+                Coins coin = i.next();
+                System.out.println(count);
+                count += coin.getValue() * coin.getQuantity();
+
+                if (count <= amount) {
+                    System.out.println("Withdrew " + coin.getQuantity() + " " + checkPlural(coin));
+                    i.remove();
+                }
+            }
+
+            for (Coins c : coinList) {
+                System.out.println(c);
+            }
+            System.out.println("The piggy bank holds " + getTotal());
+
+        } else System.out.println("Money not available");
 
         return new ResponseEntity<>(HttpStatus.OK);
     }

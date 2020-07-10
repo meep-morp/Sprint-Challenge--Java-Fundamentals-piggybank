@@ -53,9 +53,9 @@ public class CoinsController {
             System.out.println(coin.getQuantity() + " " + checkPlural(coin));
         }
 
-        System.out.println("The piggy bank holds $" + count);
+        System.out.print("The piggy bank holds $" + Math.round(count*100.0)/100.0);
 
-        return new ResponseEntity<>(coinList, HttpStatus.OK);
+        return new ResponseEntity<>(HttpStatus.OK);
     }
 
 
